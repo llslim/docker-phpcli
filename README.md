@@ -3,7 +3,7 @@ A Docker container to provide a web service for executing applications written i
 
 The container runs an instance of Apache Webserver for web applications written in PHP to display and retrieve data through standard web protocols. This container also provides connections to other service containers for data storage and sending e-mail messages.
 
-The container is intended to work as a part of an orchestrated bundle of docker containers to provide a platform for developing and testing complete web applications on a laptop or desktop. Along side database and mail service containers, this web service container is an easy and quick way to start a web application using the docker-compose utility. For more information see the [docker-lamp](https://github.com/llslim/docker-lamps) repository.
+The container is intended to work as a part of an orchestrated bundle of docker containers to provide a platform for developing and testing complete web applications on a laptop or desktop. Along side database and mail service containers, this web service container is an easy and quick way to start a web application using the docker-compose utility. For more information see the [docker-lamp](https://github.com/llslim/docker-lamp) repository.
 
 The intent of this container is for testing and development web applications on a personal laptop or desktop. So security measures against malicious attacks is not a high priority for this container. Using it in a critical environment is NOT recommended.
 
