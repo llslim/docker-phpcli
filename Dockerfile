@@ -30,4 +30,9 @@ COPY ./php.ini-production /usr/local/etc/php/php.ini
 COPY ./msmtprc /etc/msmtprc
 COPY ./default-docker.ini /usr/local/etc/php/conf.d/default-docker.ini
 
+# download, verify, and install composer
+RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-setup.php.sig \
+    && curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
+    && php composer-setup.php -- --install-dir=/usr/local/bin --filename=composer
+
 WORKDIR /var/www/html
