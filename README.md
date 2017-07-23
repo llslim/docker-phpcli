@@ -1,30 +1,31 @@
-# docker-apache-php
-The source repository for the PHP Web Service Docker containers at
-[https://hub.docker.com/r/llslim/phpweb/](https://hub.docker.com/r/llslim/phpweb/)
-
-## PHP Web Service (llslim/phpweb)
+# docker-apache-php Web Service
 A Docker container to provide a web service for executing applications written in PHP.
 
-The service uses Apache webserver for interpreting the PHP code and enabling applications to display and retrieve data through standard web protocols. Apache also provides connections to other services for data storage and sending e-mail messages.
+The container runs an instance of Apache Webserver for web applications written in PHP to display and retrieve data through standard web protocols. This container also provides connections to other service containers for data storage and sending e-mail messages.
 
-This container is intended to be use for local testing and development of a PHP web application. Hardening measures for security against malicious attacks is not a high priority for this container project. So using this container in a production environment is NOT recommended.
+The container is intended to work as a part of an orchestrated bundle of docker containers to provide a platform for developing and testing complete web applications on a laptop or desktop. Along side database and mail service containers, this web service container is an easy and quick way to start a web application using the docker-compose utility. For more information see the [docker-lamp](https://github.com/llslim/docker-lamp) repository.
 
-By default this specific container is configured to connect to a data service running MySQL. This container is also configured to use the MSMTP Mail User Agent to interpret sendmail calls from the webserver and connect to a mail service.
+The intent of this container is for testing and development web applications on a personal laptop or desktop. So security measures against malicious attacks is not a high priority for this container. Using it in a critical environment is NOT recommended.
 
-The default sendmail_path in the php.ini is set up to use the /usr/sendmail program which specified by the msmtp_mta deb package to be a wrapper for the msmtp program.
+This container is configured to use the [MSMTP Mail User Agent](http://msmtp.sourceforge.net/) to interpret sendmail calls from the web application and deliver messages to the mail service container.
 
-The default mail server specified in the msmtprc is a local “mail” server most commonly defined in a docker-compose.yml orchestration file. Most often I use a container built with mailhog mail server. By default a mailhog container expose and listens to port 1025. The /etc/msmtprc file should reflect that setting.
+The default sendmail_path in the php.ini is set to /usr/sbin/sendmail, which is a wrapper for the MSMTP user agent (via the msmtp_mta deb package).
 
-Error logging paths will be set to the /dev/stderr so docker can display them when we run `docker logs <container_name or ID>`.
+Most often this container is paired with a [MailHog email testing tool for developers](https://github.com/mailhog/MailHog) container. By default the [MailHog container](https://hub.docker.com/r/mailhog/mailhog/) expose and listens to port 1025. The default configuration of MSMTP in the /etc/msmtprc file reflects that setting. The configuration can be change to work with more traditional Mail Transfer Agents like Postfix, Exim, or Mailgun by mounting a new msmtprc file through docker-compose.
 
-## Container Tags
+In fact any configuration in this container can be overridden by mounting a configuration file as a volume in an docker-compose.yml file.
 
-### Dev tags
-- Php_xdebug
-- php.ini-development
+Error logging paths will be set to the /dev/stderr so docker can display them when we run the following on the command line:
 
-### Available tags and related php container base
-- Phpweb:5 => php:5-apache
-- Phpweb:5-dev => php:5-apache
-- Phpweb:7 => php:7-apache
-- Phpweb:7-dev => php:7-apache
+`docker logs <container_name or ID>`.
+
+## Container Options
+This container modifies the [drupal container Dockerfile](https://github.com/docker-library/drupal/blob/1a7d35cc4d2d88f7658a2b6ff39af85baca463f0/8.3/apache/Dockerfile) to build upon, and implements ideas from few other containers. The container tags are based on which version of PHP is needed for the project and whether the project is in development and needs debugging (XDebug) or profiling (XHprof) turned on.
+
+The [Offical PHP Container](https://hub.docker.com/_/php/) is used as a base container.
+
+### Available tags and related php container tags
+- docker-apache-php:php5 => php:5-apache
+- docker-apache-php:php5-dev => php:5-apache
+- docker-apache-php:php7 => php:7-apache
+- docker-apache-php:php7-dev => php:7-apache
