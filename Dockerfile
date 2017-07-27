@@ -1,9 +1,6 @@
-# from https://www.drupal.org/requirements/php#drupalversions
 FROM php:7-apache
 
 RUN a2enmod rewrite
-
-
 
 # install the PHP extensions we need
 RUN set -ex \
@@ -24,10 +21,10 @@ RUN set -ex \
 
 # install mstmp to simulate sendmail and connect to mta with php
 RUN apt-get install -y --no-install-recommends msmtp msmtp-mta \
-	&& rm -rf /var/lib/apt/lists/* \
+	&& rm -rf /var/lib/apt/lists/*
 
 # base production configuration for apache PHP module
-COPY ./php.ini-production /usr/local/etc/php/php.ini
+COPY ./php.ini-development /usr/local/etc/php/php.ini
 
 #set error_log and sendmail_path for container
 COPY ./default-docker.ini /usr/local/etc/php/conf.d/default-docker.ini
@@ -38,7 +35,11 @@ COPY ./msmtprc /etc/msmtprc
 # download, verify, and install composer
 RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-setup.php.sig \
     && curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
-    && php composer-setup.php -- --install-dir=/usr/local/bin --filename=composer
+    && php composer-setup.php -- --install-dir=/usr/local/bin --filename=composer \
+    && rm composer-setup* \
+		&& composer config -g vendor-dir /usr/local/php/vendor
+
+ENV PATH ${PATH}:/usr/local/php/vendor/bin
 
 # configuring Xdebug
 RUN pecl install xdebug
