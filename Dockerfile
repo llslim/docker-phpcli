@@ -42,11 +42,10 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
 ENV PATH ${PATH}:/usr/local/php/vendor/bin
 
 # configuring Xdebug
-RUN pecl install xdebug
 ENV XDEBUGINI_PATH=/usr/local/etc/php/conf.d/xdebug.ini
-RUN echo "zend_extension="`find /usr/local/lib/php/extensions/ -iname 'xdebug.so'` > $XDEBUGINI_PATH
 COPY ./xdebug.ini /tmp/xdebug.ini
-RUN cat /tmp/xdebug.ini >> $XDEBUGINI_PATH
-# RUN echo "xdebug.remote_host="`/sbin/ip route|awk '/default/ { print $3 }'` >> $XDEBUGINI_PATH
+RUN pecl install xdebug \
+   && echo "zend_extension="`find /usr/local/lib/php/extensions/ -iname 'xdebug.so'` > $XDEBUGINI_PATH \
+   && cat /tmp/xdebug.ini >> $XDEBUGINI_PATH
 
 WORKDIR /var/www/html
