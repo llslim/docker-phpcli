@@ -44,4 +44,8 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
 
 ENV PATH ${PATH}:/usr/local/php/vendor/bin
 
+# add webdev user
+RUN useradd -m -d /home/webdev --no-log-init -g www-data webdev
+USER webdev
+
 WORKDIR /var/www/html
