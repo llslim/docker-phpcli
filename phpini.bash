@@ -1,1 +1,1 @@
-wget -O - https://raw.githubusercontent.com/php/php-src/PHP-7.0/php.ini-production > php.ini-production
+Curl -Ss https://raw.githubusercontent.com/php/php-src/PHP-7.0/php.ini-development - > php.ini-development
