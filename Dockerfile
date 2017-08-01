@@ -48,4 +48,8 @@ RUN pecl install xdebug \
    && echo "zend_extension="`find /usr/local/lib/php/extensions/ -iname 'xdebug.so'` > $XDEBUGINI_PATH \
    && cat /tmp/xdebug.ini >> $XDEBUGINI_PATH
 
+# add webdev user
+RUN useradd -m -d /home/webdev --no-log-init -g www-data webdev
+USER webdev
+
 WORKDIR /var/www/html
