@@ -39,6 +39,10 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
     && rm composer-setup* \
 		&& composer config -g vendor-dir /usr/local/php/vendor
 
+# set composer to be used by root user without warning
+ENV COMPOSER_ALLOW_SUPERUSER 1
+		
+# add global composer vendor executables to PATH
 ENV PATH ${PATH}:/usr/local/php/vendor/bin
 
 # configuring Xdebug
@@ -47,9 +51,5 @@ COPY ./xdebug.ini /tmp/xdebug.ini
 RUN pecl install xdebug \
    && echo "zend_extension="`find /usr/local/lib/php/extensions/ -iname 'xdebug.so'` > $XDEBUGINI_PATH \
    && cat /tmp/xdebug.ini >> $XDEBUGINI_PATH
-
-# add webdev user
-RUN useradd -m -d /home/webdev --no-log-init -g www-data webdev
-USER webdev
 
 WORKDIR /var/www/html
