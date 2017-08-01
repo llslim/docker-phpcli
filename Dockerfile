@@ -42,10 +42,10 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
     && rm composer-setup* \
 		&& composer config -g vendor-dir /usr/local/php/vendor
 
-ENV PATH ${PATH}:/usr/local/php/vendor/bin
+# set composer to be used by root user without warning
+ENV COMPOSER_ALLOW_SUPERUSER 1
 
-# add webdev user
-RUN useradd -m -d /home/webdev --no-log-init -g www-data webdev
-USER webdev
+# add global composer vendor executables to PATH
+ENV PATH ${PATH}:/usr/local/php/vendor/bin
 
 WORKDIR /var/www/html
