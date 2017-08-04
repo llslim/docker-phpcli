@@ -23,8 +23,8 @@ RUN set -ex \
 	&& apt-get purge -y --auto-remove $buildDeps
 
 # install mstmp to simulate sendmail and connect to mta with php
-RUN apt-get install -y --no-install-recommends msmtp msmtp-mta php5-xdebug \
-	&& rm -rf /var/lib/apt/lists/* \
+RUN apt-get install -y --no-install-recommends msmtp msmtp-mta php5-xdebug mysql-client \
+	&& rm -rf /var/lib/apt/lists/*
 
 # base production configuration for apache PHP module
 COPY ./php.ini-development /usr/local/etc/php/php.ini
