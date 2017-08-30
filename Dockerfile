@@ -22,8 +22,13 @@ RUN set -ex \
 		libpq5 \
 	&& apt-get purge -y --auto-remove $buildDeps
 
-# install mstmp to simulate sendmail and connect to mta with php
-RUN apt-get install -y --no-install-recommends msmtp msmtp-mta \
+	# download and load the nodejs 8.x setup
+	RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+
+	# install mstmp to simulate sendmail, and connect to mta with php.
+	# install mysql-client to talk to mysql server container.
+	# install nodejs to use in conjunction to php.
+RUN apt-get install -y --no-install-recommends msmtp msmtp-mta nodejs \
 	&& rm -rf /var/lib/apt/lists/* \
 
 # base production configuration for apache PHP module
