@@ -28,7 +28,10 @@ RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
 # install mstmp to simulate sendmail, and connect to mta with php.
 # install mysql-client to talk to mysql server container.
 # install nodejs to use in conjunction to php.
-RUN apt-get install -y --no-install-recommends msmtp msmtp-mta php5-xdebug mysql-client nodejs \
+# install git, rsync and openssh-client to retrieve and share code
+# install less for file snooping, and because less is more
+RUN apt-get install -y --no-install-recommends msmtp msmtp-mta php5-xdebug \
+     mysql-client nodejs git rsync openssh-client less \
 	&& rm -rf /var/lib/apt/lists/*
 
 # base production configuration for apache PHP module
@@ -48,7 +51,11 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
 		&& composer config -g vendor-dir /usr/local/php/vendor
 
 # set composer to be used by root user without warning
-ENV COMPOSER_ALLOW_SUPERUSER 1
+  ENV COMPOSER_ALLOW_SUPERUSER 1
+
+# RUN useradd -ms /bin/bash -g www-data webdev && chgrp -R www-data /var/www \
+#    && chmod -R 775 /var/www
+# USER webdev
 
 # add global composer vendor executables to PATH
 ENV PATH ${PATH}:/usr/local/php/vendor/bin
