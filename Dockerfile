@@ -28,10 +28,10 @@ RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
 # install mstmp to simulate sendmail, and connect to mta with php.
 # install mysql-client to talk to mysql server container.
 # install nodejs to use in conjunction to php.
-# install git, rsync and openssh-client to retrieve and share code
+# install git, rsync, wget, and openssh-client to retrieve and share code
 # install less for file snooping, and because less is more
 RUN apt-get install -y --no-install-recommends msmtp msmtp-mta php5-xdebug \
-     mysql-client nodejs git rsync openssh-client less \
+     mysql-client nodejs git rsync wget openssh-client less zip unzip gzip tar \
 	&& rm -rf /var/lib/apt/lists/*
 
 # base production configuration for apache PHP module
