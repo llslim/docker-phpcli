@@ -28,8 +28,11 @@ RUN set -ex \
 	# install mstmp to simulate sendmail, and connect to mta with php.
 	# install mysql-client to talk to mysql server container.
 	# install nodejs to use in conjunction to php.
-RUN apt-get install -y --no-install-recommends msmtp msmtp-mta nodejs \
-	&& rm -rf /var/lib/apt/lists/* \
+	# install git, rsync, wget, and openssh-client to retrieve and share code
+  # install less for file snooping, and because less is more
+RUN apt-get install -y --no-install-recommends msmtp msmtp-mta php5-xdebug \
+     mysql-client nodejs git rsync wget openssh-client less zip unzip gzip tar \
+	&& rm -rf /var/lib/apt/lists/*
 
 # base production configuration for apache PHP module
 COPY ./php.ini-production /usr/local/etc/php/php.ini
@@ -48,5 +51,7 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
 		&& composer config -g vendor-dir /usr/local/php/vendor
 
 ENV PATH ${PATH}:/usr/local/php/vendor/bin
+
+COPY ./.bash /root
 
 WORKDIR /var/www/html
