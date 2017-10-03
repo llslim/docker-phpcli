@@ -53,11 +53,9 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
 # set composer to be used by root user without warning
   ENV COMPOSER_ALLOW_SUPERUSER 1
 
-# RUN useradd -ms /bin/bash -g www-data webdev && chgrp -R www-data /var/www \
-#    && chmod -R 775 /var/www
-# USER webdev
-
 # add global composer vendor executables to PATH
 ENV PATH ${PATH}:/usr/local/php/vendor/bin
+
+COPY ./.bashrc /root
 
 WORKDIR /var/www/html
