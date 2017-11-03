@@ -55,6 +55,6 @@ ENV PATH ${PATH}:/usr/local/php/vendor/bin
 # download and load the nodejs 8.x setup
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 
-COPY ./.bash /root
+COPY ./.bashrc /root
 
 WORKDIR /var/www/html
