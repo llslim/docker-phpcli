@@ -20,7 +20,7 @@ RUN set -ex \
 	&& apt-mark manual \
 		libjpeg62-turbo \
 		libpq5 \
-	&& apt-get purge -y --auto-remove $buildDeps
+	&& apt-get purge -y --auto-remove $buildDeps \
 	&& rm -rf /var/lib/apt/lists/*
 
 	# base production configuration for apache PHP module
