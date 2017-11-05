@@ -22,4 +22,4 @@ libxml2-dev sudo git mysql-client openssh-client rsync less unzip zip tar \
   && rm -rf /var/lib/apt/lists/*
 
 COPY drupal-*.ini /usr/local/etc/php/conf.d/
-COPY ../.bashrc /root
+COPY .bashrc /root
