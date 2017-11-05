@@ -21,6 +21,5 @@ libxml2-dev sudo git mysql-client openssh-client rsync less unzip zip tar \
   && echo "export PATH=~/.composer/vendor/bin:\$PATH" >> ~/.bash_profile \
   && rm -rf /var/lib/apt/lists/*
 
-COPY ../drupal-*.ini /usr/local/etc/php/conf.d/
 COPY drupal-*.ini /usr/local/etc/php/conf.d/
 COPY ../.bashrc /root
