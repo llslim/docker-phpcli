@@ -6,15 +6,24 @@ WORKDIR /var/www/html
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - \
-  && apt-get update \
-  && apt-get install -y libpng12-dev libjpeg-dev libpq-dev libxml2-dev sudo git nodejs mysql-client openssh-client rsync less unzip zip tar \
-  && rm -rf /var/lib/apt/lists/* \
-  && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
-  && docker-php-ext-install gd mbstring pdo pdo_mysql pdo_pgsql zip \
-  && docker-php-ext-install opcache bcmath soap \
-  && pecl install redis-3.1.1 \
-  && docker-php-ext-enable redis
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+&& set -ex \
+	&& buildDeps=' \
+		libjpeg62-turbo-dev \
+		libpng12-dev \
+		libpq-dev \
+	' \
+  &&  devDeps='git rsync mysql-client openssh-client nodejs less zip unzip tar' \
+	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps $devDeps \
+	&& rm -rf /var/lib/apt/lists/* \
+	&& docker-php-ext-configure gd \
+		--with-jpeg-dir=/usr \
+		--with-png-dir=/usr \
+	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql zip bcmath soap \
+	&& apt-mark manual \
+		libjpeg62-turbo \
+		libpq5 \
+	&& apt-get purge -y --auto-remove $buildDeps
 
   COPY drupal-*.ini /usr/local/etc/php/conf.d/
   COPY .bashrc /root
