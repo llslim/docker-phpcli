@@ -1,7 +1,7 @@
 # this dockerfile is a modified version of the official drupal dockerfile
 # https://github.com/docker-library/drupal/blob/cdbfea0a45633dbdbec997334cb902405445a49c/8.4/apache/Dockerfile
 
-FROM php:7.1-apache
+FROM php:7-apache
 MAINTAINER Kevin Williams (@llslim) <info@llslim.com>
 RUN a2enmod rewrite
 
