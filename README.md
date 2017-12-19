@@ -1,4 +1,5 @@
-# docker-apache-php Web Service
+# docker-apache-php Web Service (php 7 apache latest)
+
 A Docker container to provide a web service for executing applications written in PHP.
 
 The container runs an instance of Apache Webserver for web applications written in PHP to display and retrieve data through standard web protocols. This container also provides connections to other service containers for data storage and sending e-mail messages.
@@ -19,13 +20,5 @@ Error logging paths will be set to the /dev/stderr so docker can display them wh
 
 `docker logs <container_name or ID>`.
 
-## Container Options
-This container modifies the [drupal container Dockerfile](https://github.com/docker-library/drupal/blob/1a7d35cc4d2d88f7658a2b6ff39af85baca463f0/8.3/apache/Dockerfile) to build upon, and implements ideas from few other containers. The container tags are based on which version of PHP is needed for the project and whether the project is in development and needs debugging (XDebug) or profiling (XHprof) turned on.
-
+## Base Container
 The [Offical PHP Container](https://hub.docker.com/_/php/) is used as a base container.
-
-### Available tags and related php container tags
-- docker-apache-php:php5 => php:5-apache
-- docker-apache-php:php5-dev => php:5-apache
-- docker-apache-php:php7 => php:7-apache
-- docker-apache-php:php7-dev => php:7-apache
