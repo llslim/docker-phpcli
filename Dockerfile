@@ -9,7 +9,7 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 RUN set -ex \
 	&& buildDeps=' \
 		libjpeg62-turbo-dev \
-		libpng12-dev \
+		libpng-dev \
 		libpq-dev \
 		libxml2-dev \
 		gnupg \
@@ -23,7 +23,7 @@ RUN set -ex \
 	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql zip bcmath soap \
 	&& apt-mark manual \
 		libjpeg62-turbo \
-		libpq5 \
+		libpq \
 	&& curl -sL https://deb.nodesource.com/setup_9.x | bash - \
 	&& apt-get purge -y --auto-remove $buildDeps
 
