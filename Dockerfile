@@ -1,5 +1,5 @@
 FROM php:7.1-cli
-MAINTAINER drupal-docker
+MAINTAINER Kevin Williams (@llslim) <info@llslim.com>
 
 VOLUME /var/www/html
 WORKDIR /var/www/html
@@ -12,6 +12,7 @@ RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - \
 		libjpeg62-turbo-dev \
 		libpng12-dev \
 		libpq-dev \
+		libxml2-dev \
 	' \
   &&  devDeps='git rsync mysql-client openssh-client nodejs less zip unzip tar' \
 	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps $devDeps \
