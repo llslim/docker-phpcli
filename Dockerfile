@@ -6,7 +6,7 @@ WORKDIR /var/www/html
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - \
 && set -ex \
 	&& buildDeps=' \
 		libjpeg62-turbo-dev \
