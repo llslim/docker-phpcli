@@ -6,8 +6,7 @@ WORKDIR /var/www/html
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - \
-&& set -ex \
+RUN set -ex \
 	&& buildDeps=' \
 		libjpeg62-turbo-dev \
 		libpng12-dev \
@@ -25,6 +24,7 @@ RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - \
 	&& apt-mark manual \
 		libjpeg62-turbo \
 		libpq5 \
+	&& curl -sL https://deb.nodesource.com/setup_9.x | bash - \
 	&& apt-get purge -y --auto-remove $buildDeps
 
   COPY drupal-*.ini /usr/local/etc/php/conf.d/
