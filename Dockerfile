@@ -23,7 +23,7 @@ RUN set -ex \
 	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql zip bcmath soap \
 	&& apt-mark manual \
 		libjpeg62-turbo \
-		libpq \
+		libpq-dev \
 	&& curl -sL https://deb.nodesource.com/setup_9.x | bash - \
 	&& apt-get purge -y --auto-remove $buildDeps
 
