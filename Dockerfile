@@ -6,13 +6,14 @@ WORKDIR /var/www/html
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - \
+RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - \
 && set -ex \
 	&& buildDeps=' \
 		libjpeg62-turbo-dev \
 		libpng12-dev \
 		libpq-dev \
 		libxml2-dev \
+		gnupg \
 	' \
   &&  devDeps='git rsync mysql-client openssh-client nodejs less zip unzip tar' \
 	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps $devDeps \
