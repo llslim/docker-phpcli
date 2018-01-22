@@ -1,4 +1,4 @@
-FROM php:7.0-cli
+FROM php:7.1-cli
 MAINTAINER Kevin Williams (@llslim) <info@llslim.com>
 
 # This is a image for maintaining PHP applications from a bash shell with common PHP command line development tools (e.g. git, rsync, mysql/pgsql, and etc.).
