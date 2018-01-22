@@ -1,11 +1,14 @@
 # PHP Command Line (llslim/phpcli)
-A Docker container to provide a BASH Shell for maintenance on  applications written in PHP.
+This is a container for maintaining PHP applications from a bash shell with common PHP command line development tools (e.g. git, rsync, mysql/pgsql, and etc.).
+
+The image for this container also configures, builds, and installs PHP extensions needed for associated web applications. For some PHP extensions some dependency packages need to be installed with both the source code and run time library. At the end of the building process the source code of the packages will
+be removed, but the run time libraries will be marked to remain in order to be used by the extensions.
+
+Since this image uses the APT package manager to retrieve and install software. The source code and runtimes for each of the three libraries can be installed through metapackages, where separate packages are bundled together. The metapackages are specified in the '$buildDeps' shell variable, and the developer tools are specified in the 'devTools' shell variable to be used in one 'apt-get install' command. Also the build dependencies can be easily removed at the build process with the variable.
+
+For the common graphics PHP extension, gd, the png and jpeg libraries are needed. For PostGRESQL, the pq library is needed.
 
 This container most often is a companion to the [llslim/docker-apache-php Web Service](https://hub.docker.com/r/llslim/docker-apache-php/). It allows a developer to use the command line tools of composer and nodejs in a separate container, and run the devtools only when need it.
-
-I use it to build drupal websites through the command line tools of drush and drupal console which needs access to the database container running in a docker-compose environment.
-
-
 
 By default this specific container is configured to connect to a data service running MySQL. This container is also configured to use the MSMTP Mail User Agent to interpret sendmail calls from the webserver and connect to a mail service.
 
