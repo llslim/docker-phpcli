@@ -23,7 +23,6 @@ RUN set -ex \
 				less \
 				mysql-client \
 				openssh-client \
-				nodejs \
 				less \
 				rsync \
 				tar \
@@ -35,8 +34,9 @@ RUN set -ex \
 		libpng16-16 \
 		libpq5 \
 	' \
-	&& curl -sL https://deb.nodesource.com/setup_9.x | bash - \
 	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps $devTools \
+	&& curl -sL https://deb.nodesource.com/setup_9.x | bash - \
+	&& apt-get install -y --no-install-recommends nodejs
 	&& rm -rf /var/lib/apt/lists/* \
 
 	# build php extensions with development dependencies, and install them
