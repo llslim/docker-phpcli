@@ -35,6 +35,7 @@ RUN set -ex \
 		libpng16-16 \
 		libpq5 \
 	' \
+	&& curl -sL https://deb.nodesource.com/setup_9.x | bash - \
 	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps $devTools \
 	&& rm -rf /var/lib/apt/lists/* \
 
@@ -48,7 +49,7 @@ RUN set -ex \
 	# so the extensions can use them.
 	# PHP will issue 'WARNING' messages without these libraries
 	&& apt-mark manual $markedLibs \
-  
+
 	# remove unneeded development sources to reduce size of image
 	&& apt-get purge -y --auto-remove $buildDeps
 
@@ -56,8 +57,7 @@ RUN set -ex \
 	COPY php-*.ini /usr/local/etc/php/conf.d/
 
 	# install composer
-	RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - \
-	&& echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-setup.php.sig \
+	RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-setup.php.sig \
 	&& curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
 	&& php composer-setup.php -- --install-dir=/usr/local/bin --filename=composer \
 	&& rm composer-setup*
