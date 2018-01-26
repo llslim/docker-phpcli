@@ -36,7 +36,7 @@ RUN set -ex \
 	' \
 	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps $devTools \
 	&& curl -sL https://deb.nodesource.com/setup_9.x | bash - \
-	&& apt-get install -y --no-install-recommends nodejs
+	&& apt-get install -y --no-install-recommends nodejs \
 	&& rm -rf /var/lib/apt/lists/* \
 
 	# build php extensions with development dependencies, and install them
