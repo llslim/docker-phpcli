@@ -16,10 +16,18 @@
 # alias rm='rm -i'
 # alias cp='cp -i'
 # alias mv='mv -i'
+
+# set up local composer bin in path
+if [[ -d /var/www/html/vendor/bin ]]
+then
+  PATH=/var/www/html/vendor/bin:$PATH
+fi
+
+# set up ssh agent
  if [[ -d /var/www/src/.ssh ]]
  then
-	cp -R /var/www/src/.ssh /root/ &&
-	chmod 700 /root/.ssh/id_rsa
+	cp -R /var/www/src/.ssh /home/dev/ &&
+	chmod 700 /home/dev/.ssh/id_rsa
 fi
 
 eval `ssh-agent -s`
