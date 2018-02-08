@@ -77,11 +77,5 @@ RUN mkdir -p /var/www/html && chgrp -R www-data /var/www && chmod -R 2774 /var/w
 	WORKDIR /var/www/html
 
 # RUN composer global require drush/drush drupal/console && /usr/local/php/vendor/bin/drush init -y
-<<<<<<< HEAD
 
 CMD /bin/bash
-||||||| merged common ancestors
-=======
-
-COMMAND /bin/bash
->>>>>>> 27f61482ce5b5520b13c68417858e7ee4c465436
