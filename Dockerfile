@@ -77,3 +77,5 @@ RUN mkdir -p /var/www/html && chgrp -R www-data /var/www && chmod -R 2774 /var/w
 	WORKDIR /var/www/html
 
 # RUN composer global require drush/drush drupal/console && /usr/local/php/vendor/bin/drush init -y
+
+CMD /bin/bash
