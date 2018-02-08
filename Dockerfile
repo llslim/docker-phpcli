@@ -1,4 +1,4 @@
-FROM php:7.1-cli
+FROM php:7.0-cli
 MAINTAINER Kevin Williams (@llslim) <info@llslim.com>
 
 # This is a image for maintaining PHP applications from a bash shell with common PHP command line development tools (e.g. git, rsync, mysql/pgsql, and etc.).
@@ -77,3 +77,5 @@ RUN mkdir -p /var/www/html && chgrp -R www-data /var/www && chmod -R 2774 /var/w
 	WORKDIR /var/www/html
 
 # RUN composer global require drush/drush drupal/console && /usr/local/php/vendor/bin/drush init -y
+
+CMD /bin/bash
