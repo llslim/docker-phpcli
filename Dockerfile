@@ -12,7 +12,7 @@ RUN set -ex \
 	' \
 	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps \
 	msmtp msmtp-mta mysql-client nodejs git rsync wget openssh-client less zip unzip gzip tar \
-     	&& pecl install xdebug-2.5.5 \ 
+     	&& pecl install xdebug-2.5.5 \
 	&& docker-php-ext-configure gd \
 		--with-jpeg-dir=/usr \
 		--with-png-dir=/usr \
@@ -40,15 +40,18 @@ COPY ./msmtprc /etc/msmtprc
 RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-setup.php.sig \
     && curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
     && php composer-setup.php -- --install-dir=/usr/local/bin --filename=composer \
-    && rm composer-setup* \
-    && composer config -g vendor-dir /usr/local/php/vendor
+    && rm composer-setup*
 
-# set composer to be used by root user without warning
-  ENV COMPOSER_ALLOW_SUPERUSER 1
+		# create root diretory and give permissions to the non-root user
+		RUN mkdir -p /var/www/html && chgrp -R www-data /var/www && chmod -R 2774 /var/www
 
-# add global composer vendor executables to PATH
-ENV PATH ${PATH}:/usr/local/php/vendor/bin
-
-COPY ./.bashrc /root
+			# create user dev
+			RUN groupadd -r dev && useradd --no-log-init -m -d /home/dev -s /bin/bash -r -g dev -G www-data,staff dev
+			COPY .bashrc /home/dev
+			RUN chown -R dev.dev /home/dev
+			USER dev
+			ENV HOME /home/dev
+			ENV PATH /home/dev/.composer/vendor/bin:$PATH
 
 WORKDIR /var/www/html
+CMD /bin/bash
