@@ -11,6 +11,8 @@ RUN set -ex \
 		libpq-dev \
 	' \
 	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps \
+	msmtp msmtp-mta mysql-client nodejs git rsync wget openssh-client less zip unzip gzip tar \
+     	&& pecl install xdebug-2.5.5 \ 
 	&& docker-php-ext-configure gd \
 		--with-jpeg-dir=/usr \
 		--with-png-dir=/usr \
@@ -24,15 +26,6 @@ RUN set -ex \
 
 # download and load the nodejs 6.x lts setup
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
-
-# install mstmp to simulate sendmail, and connect to mta with php.
-# install mysql-client to talk to mysql server container.
-# install nodejs to use in conjunction to php.
-# install git, rsync, wget, and openssh-client to retrieve and share code
-# install less for file snooping, and because less is more
-RUN apt-get install -y --no-install-recommends msmtp msmtp-mta php5-xdebug \
-     mysql-client nodejs git rsync wget openssh-client less zip unzip gzip tar \
-	&& rm -rf /var/lib/apt/lists/*
 
 # base production configuration for apache PHP module
 COPY ./php.ini-development /usr/local/etc/php/php.ini
@@ -48,7 +41,7 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
     && curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
     && php composer-setup.php -- --install-dir=/usr/local/bin --filename=composer \
     && rm composer-setup* \
-		&& composer config -g vendor-dir /usr/local/php/vendor
+    && composer config -g vendor-dir /usr/local/php/vendor
 
 # set composer to be used by root user without warning
   ENV COMPOSER_ALLOW_SUPERUSER 1
