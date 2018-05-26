@@ -76,7 +76,6 @@ RUN mkdir -p /var/www/html && chgrp -R www-data /var/www && chmod -R 2774 /var/w
 	RUN chown -R dev.dev /home/dev
 	USER dev
 	ENV HOME /home/dev
-	ENV PATH /home/dev/.composer/vendor/bin:$PATH
 
 	# VOLUME /var/www/html
 	WORKDIR /var/www/html
