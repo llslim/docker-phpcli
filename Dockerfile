@@ -1,57 +1,85 @@
-# from https://www.drupal.org/requirements/php#drupalversions
-FROM php:5-apache
+FROM php:5-cli
+MAINTAINER Kevin Williams (@llslim) <info@llslim.com>
 
-RUN a2enmod rewrite
+RUN set -ex; \
+	if command -v a2enmod; then \
+		a2enmod rewrite; \
+	fi; \
+	savedAptMark="$(apt-mark showmanual)"; \
 
-# install the PHP extensions we need
-RUN set -ex \
-	&& buildDeps=' \
-		libjpeg62-turbo-dev \
-		libpng12-dev \
-		libpq-dev \
-	' \
-	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps \
-	msmtp msmtp-mta mysql-client nodejs git rsync wget openssh-client less zip unzip gzip tar \
-     	&& pecl install xdebug-2.5.5 \
-	&& docker-php-ext-configure gd \
+	# installs build dependencies
+	apt-get update && apt-get install -y --no-install-recommends \
+	libjpeg-dev \
+	libpng-dev \
+	libpq-dev \
+	; \
+
+	# build php extensions with development dependencies, and install them
+	docker-php-ext-configure gd \
 		--with-jpeg-dir=/usr \
 		--with-png-dir=/usr \
-	&& docker-php-ext-install -j "$(nproc)" gd mbstring mysql mysqli pdo pdo_mysql pdo_pgsql zip \
-# PHP Warning:  PHP Startup: Unable to load dynamic library '/usr/local/lib/php/extensions/no-debug-non-zts-20151012/gd.so' - libjpeg.so.62: cannot open shared object file: No such file or directory in Unknown on line 0
-# PHP Warning:  PHP Startup: Unable to load dynamic library '/usr/local/lib/php/extensions/no-debug-non-zts-20151012/pdo_pgsql.so' - libpq.so.5: cannot open shared object file: No such file or directory in Unknown on line 0
-	&& apt-mark manual \
-		libjpeg62-turbo \
-		libpq5 \
-	&& apt-get purge -y --auto-remove $buildDeps
+	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache mysqli pdo pdo_mysql pdo_pgsql zip; \
 
-# download and load the nodejs 6.x lts setup
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
+	# Mark the library packages that were installed with development as manual
+	# so the extensions can use them.
+	# PHP will issue 'WARNING' messages without these libraries
+	apt-mark auto '.*' > /dev/null; \
+	apt-mark manual $savedAptMark; \
+	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+		| awk '/=>/ { print $3 }' \
+		| sort -u \
+		| xargs -r dpkg-query -S \
+		| cut -d: -f1 \
+		| sort -u \
+		| xargs -rt apt-mark manual; \
+	\
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 
-# base production configuration for apache PHP module
-COPY ./php.ini-development /usr/local/etc/php/php.ini
+	# load some general php configuration files
+	COPY php-*.ini /usr/local/etc/php/conf.d/ \
 
-#set error_log and sendmail_path for container
-COPY ./default-docker.ini /usr/local/etc/php/conf.d/default-docker.ini
+	# download and load nodejs debian packages to be activated on the next
+	# `apt-get install nodejs` command
+	curl -sL https://deb.nodesource.com/setup_10.x | bash - \
 
-# MSMTP Configuration for mailhog
-COPY ./msmtprc /etc/msmtprc
+  # install all the devtools needed for php cli command line tools (e.g. drush, wp-cli)
+	apt-get update && apt-get install -y --no-install-recommends \
+				git \
+				gnupg \
+				less \
+				mysql-client \
+				openssh-client \
+				nodejs \
+				rsync \
+				tar \
+				unzip \
+				zip \
+				libnotify-bin \
+				; \
 
-# download, verify, and install composer
-RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-setup.php.sig \
-    && curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
-    && php composer-setup.php -- --install-dir=/usr/local/bin --filename=composer \
-    && rm composer-setup*
+	# remove unneeded development sources to reduce size of image
+  rm -rf /var/lib/apt/lists/*
 
-		# create root diretory and give permissions to the non-root user
-		RUN mkdir -p /var/www/html && chgrp -R www-data /var/www && chmod -R 2774 /var/www
+	# install composer
+	RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-setup.php.sig \
+	&& curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
+	&& php composer-setup.php -- --install-dir=/usr/local/bin --filename=composer \
+	&& rm composer-setup*
 
-			# create user dev
-			RUN groupadd -r dev && useradd --no-log-init -m -d /home/dev -s /bin/bash -r -g dev -G www-data,staff dev
-			COPY .bashrc /home/dev
-			RUN chown -R dev.dev /home/dev
-			USER dev
-			ENV HOME /home/dev
-			ENV PATH /home/dev/.composer/vendor/bin:$PATH
+	# create user dev
+	RUN groupadd -r dev && useradd --no-log-init -m -d /home/dev -s /bin/bash -r -g dev -G www-data,staff dev
+	COPY .bashrc /home/dev
+	RUN chown -R dev.dev /home/dev
 
-WORKDIR /var/www/html
+	# create working directory and give permissions to the 'www-data' user group
+	RUN mkdir -p /var/www/html && chgrp -R www-data /var/www && chmod -R 2774 /var/www
+
+	USER dev
+	ENV HOME /home/dev
+
+	# VOLUME /var/www/html
+	WORKDIR /var/www/html
+
+# RUN composer global require drush/drush drupal/console && /home/dev/.composer/vendor/bin/drush init -y
+
 CMD /bin/bash
