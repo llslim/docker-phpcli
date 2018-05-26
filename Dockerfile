@@ -36,7 +36,7 @@ RUN set -ex; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 
 	# load some general php configuration files
-	COPY php-*.ini /usr/local/etc/php/conf.d/
+	COPY php-*.ini /usr/local/etc/php/conf.d/ \
 
 	# download and load nodejs debian packages to be activated on the next
 	# `apt-get install nodejs` command
