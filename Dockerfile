@@ -50,7 +50,6 @@ RUN set -ex; \
 				mysql-client \
 				openssh-client \
 				nodejs \
-				less \
 				rsync \
 				tar \
 				unzip \
@@ -67,13 +66,14 @@ RUN set -ex; \
 	&& php composer-setup.php -- --install-dir=/usr/local/bin --filename=composer \
 	&& rm composer-setup*
 
-# create root diretory and give permissions to the non-root user
-RUN mkdir -p /var/www/html && chgrp -R www-data /var/www && chmod -R 2774 /var/www
-
 	# create user dev
 	RUN groupadd -r dev && useradd --no-log-init -m -d /home/dev -s /bin/bash -r -g dev -G www-data,staff dev
 	COPY .bashrc /home/dev
 	RUN chown -R dev.dev /home/dev
+
+	# create working directory and give permissions to the 'www-data' user group
+	RUN mkdir -p /var/www/html && chgrp -R www-data /var/www && chmod -R 2774 /var/www
+
 	USER dev
 	ENV HOME /home/dev
 
