@@ -18,7 +18,7 @@
 # alias mv='mv -i'
 
 # set up local composer bin in path
-if [[ -d /var/www/html/vendor/bin ]]
+if [ -d /var/www/html/vendor/bin ]
 then
   PATH=/var/www/html/vendor/bin:$PATH
 fi
