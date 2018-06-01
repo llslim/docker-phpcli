@@ -33,17 +33,16 @@ RUN set -ex; \
 		| sort -u \
 		| xargs -rt apt-mark manual; \
 	\
-	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false;
 
 	# load some general php configuration files
-	COPY php-*.ini /usr/local/etc/php/conf.d/ \
+	COPY php-*.ini /usr/local/etc/php/conf.d/
 
 	# download and load nodejs debian packages to be activated on the next
 	# `apt-get install nodejs` command
-	curl -sL https://deb.nodesource.com/setup_10.x | bash - \
-
-  # install all the devtools needed for php cli command line tools (e.g. drush, wp-cli)
-	apt-get update && apt-get install -y --no-install-recommends \
+	# install all the devtools needed for php cli command line tools (e.g. drush, wp-cli)
+	RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - ; \
+	apt-get update ; apt-get install -y --no-install-recommends \
 				git \
 				gnupg \
 				less \
@@ -56,9 +55,7 @@ RUN set -ex; \
 				zip \
 				libnotify-bin \
 				; \
-
-	# remove unneeded development sources to reduce size of image
-  rm -rf /var/lib/apt/lists/*
+				rm -rf /var/lib/apt/lists/*
 
 	# install composer
 	RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-setup.php.sig \
