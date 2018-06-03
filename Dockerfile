@@ -6,14 +6,13 @@ RUN set -ex; \
 		a2enmod rewrite; \
 	fi; \
 	savedAptMark="$(apt-mark showmanual)"; \
-
 	# installs build dependencies
 	apt-get update && apt-get install -y --no-install-recommends \
 	libjpeg-dev \
 	libpng-dev \
 	libpq-dev \
+	gnupg \
 	; \
-
 	# build php extensions with development dependencies, and install them
 	docker-php-ext-configure gd \
 		--with-jpeg-dir=/usr \
@@ -24,7 +23,7 @@ RUN set -ex; \
 	# so the extensions can use them.
 	# PHP will issue 'WARNING' messages without these libraries
 	apt-mark auto '.*' > /dev/null; \
-	apt-mark manual $savedAptMark; \
+	apt-mark manual $savedAptMark gnupg; \
 	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
 		| awk '/=>/ { print $3 }' \
 		| sort -u \
@@ -32,7 +31,6 @@ RUN set -ex; \
 		| cut -d: -f1 \
 		| sort -u \
 		| xargs -rt apt-mark manual; \
-	\
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false;
 
 	# load some general php configuration files
@@ -44,7 +42,6 @@ RUN set -ex; \
 	RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - ; \
 	apt-get update ; apt-get install -y --no-install-recommends \
 				git \
-				gnupg \
 				less \
 				mysql-client \
 				openssh-client \
