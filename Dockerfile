@@ -52,6 +52,8 @@ RUN set -ex; \
 				zip \
 				libnotify-bin \
 				; \
+				pecl channel-update pecl.php.net \
+			  && pecl install xdebug; \
 				rm -rf /var/lib/apt/lists/*
 
 	# install composer
