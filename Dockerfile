@@ -44,6 +44,7 @@ RUN set -ex; \
 				git \
 				less \
 				mysql-client \
+				sqlite3 \
 				openssh-client \
 				nodejs \
 				rsync \
