@@ -1,5 +1,5 @@
 FROM php:7.4-cli
-MAINTAINER Kevin Williams (@llslim) <info@llslim.com>
+LABEL maintainer="Kevin Williams (@llslim) <info@llslim.com>"
 
 RUN set -ex; \
 	if command -v a2enmod; then \
@@ -17,7 +17,6 @@ RUN set -ex; \
 		--with-jpeg-dir=/usr \
 		--with-png-dir=/usr \
 	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache mysqli pdo pdo_mysql pdo_pgsql zip; \
-
 	# Mark the library packages that were installed with development as manual
 	# so the extensions can use them.
 	# PHP will issue 'WARNING' messages without these libraries
