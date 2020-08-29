@@ -1,4 +1,4 @@
-FROM php:7.0-cli
+FROM php:7.4-cli
 MAINTAINER Kevin Williams (@llslim) <info@llslim.com>
 
 RUN set -ex; \
@@ -11,8 +11,7 @@ RUN set -ex; \
 	libjpeg-dev \
 	libpng-dev \
 	libpq-dev \
-	gnupg \
-	; \
+	gnupg; \
 	# build php extensions with development dependencies, and install them
 	docker-php-ext-configure gd \
 		--with-jpeg-dir=/usr \
@@ -39,22 +38,17 @@ RUN set -ex; \
 	# download and load nodejs debian packages to be activated on the next
 	# `apt-get install nodejs` command
 	# install all the devtools needed for php cli command line tools (e.g. drush, wp-cli)
-	RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - ; \
+	RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - ; \
 	apt-get update ; apt-get install -y --no-install-recommends \
 				git \
 				less \
-				mysql-client \
-				sqlite3 \
+				default-mysql-client \
 				openssh-client \
 				nodejs \
 				rsync \
 				tar \
 				unzip \
-				zip \
-				libnotify-bin \
-				; \
-				pecl channel-update pecl.php.net \
-			  && pecl install xdebug; \
+				zip ; \
 				rm -rf /var/lib/apt/lists/*
 
 	# install composer
