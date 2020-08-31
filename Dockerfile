@@ -11,11 +11,12 @@ RUN set -ex; \
 	libjpeg-dev \
 	libpng-dev \
 	libpq-dev \
+	libonig-dev \
+	libzip-dev \
 	gnupg; \
 	# build php extensions with development dependencies, and install them
 	docker-php-ext-configure gd \
-		--with-jpeg-dir=/usr \
-		--with-png-dir=/usr \
+		--with-jpeg=/usr \
 	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache mysqli pdo pdo_mysql pdo_pgsql zip; \
 	# Mark the library packages that were installed with development as manual
 	# so the extensions can use them.
@@ -47,6 +48,7 @@ RUN set -ex; \
 				rsync \
 				tar \
 				unzip \
+				sudo \
 				zip ; \
 				rm -rf /var/lib/apt/lists/*
 
@@ -57,7 +59,9 @@ RUN set -ex; \
 	&& rm composer-setup*
 
 	# create user dev
-	RUN groupadd -r dev && useradd --no-log-init -m -d /home/dev -s /bin/bash -r -g dev -G www-data,staff dev
+	RUN groupadd -r dev -g 1000 && useradd --uid 1000 --no-log-init -m -d /home/dev -s /bin/bash -r \
+	    -g dev -G sudo,www-data,staff dev && echo "dev:w3bd3v" | chpasswd
+
 	COPY .bashrc /home/dev
 	RUN chown -R dev.dev /home/dev
 
