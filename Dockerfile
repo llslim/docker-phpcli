@@ -44,6 +44,7 @@ RUN set -ex; \
 				less \
 				default-mysql-client \
 				openssh-client \
+				ca-certificates \
 				nodejs \
 				rsync \
 				tar \
@@ -58,6 +59,11 @@ RUN set -ex; \
 	&& php composer-setup.php -- --install-dir=/usr/local/bin --filename=composer \
 	&& rm composer-setup*
 
+	# install drupal launcher
+	RUN curl https://drupalconsole.com/installer -L -o drupal.phar \
+	&& mv drupal.phar /usr/local/bin/drupal \
+	&& chmod +x /usr/local/bin/drupal
+
 	# create user dev
 	RUN groupadd -r dev -g 1000 && useradd --uid 1000 --no-log-init -m -d /home/dev -s /bin/bash -r \
 	    -g dev -G sudo,www-data,staff dev && echo "dev:w3bd3v" | chpasswd
@@ -66,14 +72,17 @@ RUN set -ex; \
 	RUN chown -R dev.dev /home/dev
 
 	# create working directory and give permissions to the 'www-data' user group
-	RUN mkdir -p /var/www/html && chgrp -R www-data /var/www && chmod -R 2774 /var/www
+	RUN mkdir -p /var/www/html && chown -R dev:www-data /var/www && chmod -R +664 /var/www
 
 	USER dev
 	ENV HOME /home/dev
 
-	# VOLUME /var/www/html
-	WORKDIR /var/www/html
+	# Setting up composer
+	RUN composer global init
+	COPY composer.jtxt /home/dev/.composer/composer.json
+	RUN composer global install
 
+	WORKDIR /var/www/html
 # RUN composer global require drush/drush drupal/console && /home/dev/.composer/vendor/bin/drush init -y
 
 CMD /bin/bash
