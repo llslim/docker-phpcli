@@ -1,40 +1,52 @@
 FROM php:7.4-cli
 LABEL maintainer="Kevin Williams (@llslim) <info@llslim.com>"
 
-RUN set -ex; \
+RUN set -eux; \
+\
 	if command -v a2enmod; then \
 		a2enmod rewrite; \
 	fi; \
-	savedAptMark="$(apt-mark showmanual)"; \
-	# installs build dependencies
-	apt-get update && apt-get install -y --no-install-recommends \
-	libjpeg-dev \
-	libpng-dev \
-	libpq-dev \
-	libonig-dev \
-	libzip-dev \
-	gnupg; \
-	# build php extensions with development dependencies, and install them
-	docker-php-ext-configure gd \
-		--with-jpeg=/usr \
-	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache mysqli pdo pdo_mysql pdo_pgsql zip; \
-	# Mark the library packages that were installed with development as manual
-	# so the extensions can use them.
-	# PHP will issue 'WARNING' messages without these libraries
-	apt-mark auto '.*' > /dev/null; \
-	apt-mark manual $savedAptMark gnupg; \
-	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
-		| awk '/=>/ { print $3 }' \
-		| sort -u \
-		| xargs -r dpkg-query -S \
-		| cut -d: -f1 \
-		| sort -u \
-		| xargs -rt apt-mark manual; \
-	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false;
-
+	buildDeps=" \
+		libfreetype6-dev \
+		libjpeg-dev \
+		libpng-dev \
+		libpq-dev \
+		libzip-dev \
+	 "; \
+	 supportServices=" \
+	       msmtp \
+	       msmtp-mta \
+	       gdb \
+	 "; \
+	  apt-get update; \
+	  apt-get install -y --no-install-recommends $supportServices; \
+	  savedAptMark="$(apt-mark showmanual)"; \
+	  apt-get install -y --no-install-recommends $buildDeps; \
+	 # build php extensions with development dependencies, and install them
+	 docker-php-ext-configure \
+	   gd --with-freetype --with-jpeg; \
+	 docker-php-ext-install -j "$(nproc)" gd opcache pdo pdo_mysql pdo_pgsql zip; \
+	  # install xdebug extension
+	 # pecl install xdebug; \
+		# docker-php-ext-enable xdebug; \
+	# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
+	 apt-mark auto '.*' > /dev/null; \
+	 apt-mark manual $savedAptMark; \
+	 ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+	   | awk '/=>/ { print $3 }' \
+	   | sort -u \
+	   | xargs -r dpkg-query -S \
+	   | cut -d: -f1 \
+	   | sort -u \
+	   | xargs -rt apt-mark manual; \
+	 \
+	 apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+	  rm -rf /var/lib/apt/lists/*
 	# load some general php configuration files
 	COPY php-*.ini /usr/local/etc/php/conf.d/
-
+	# copy msmtp config files
+	COPY ./msmtprc /etc/msmtprc
+	
 	# download and load nodejs debian packages to be activated on the next
 	# `apt-get install nodejs` command
 	# install all the devtools needed for php cli command line tools (e.g. drush, wp-cli)
