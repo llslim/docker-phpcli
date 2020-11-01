@@ -25,7 +25,7 @@ RUN set -eux; \
 	 # build php extensions with development dependencies, and install them
 	 docker-php-ext-configure \
 	   gd --with-freetype --with-jpeg; \
-	 docker-php-ext-install -j "$(nproc)" gd opcache pdo pdo_mysql pdo_pgsql zip; \
+	 docker-php-ext-install -j "$(nproc)" gd opcache pdo pdo_mysql pdo_pgsql mysqli zip; \
 	  # install xdebug extension
 	 # pecl install xdebug; \
 		# docker-php-ext-enable xdebug; \
