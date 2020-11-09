@@ -1,6 +1,13 @@
 FROM php:7.4-cli
 LABEL maintainer="Kevin Williams (@llslim) <info@llslim.com>"
 
+# copy default php.ini into image
+COPY php.ini /usr/local/etc/php/
+
+# load php module configuration files
+COPY php-conf.d/*.ini /usr/local/etc/php/conf.d/
+
+	
 RUN set -eux; \
 \
 	if command -v a2enmod; then \
@@ -16,10 +23,11 @@ RUN set -eux; \
 	 supportServices=" \
 	       msmtp \
 	       msmtp-mta \
-	       gdb \
+	   #    gdb \
 	 "; \
 	  apt-get update; \
-	  apt-get install -y --no-install-recommends $supportServices; \
+	  export DEBIAN_FRONTEND=noninteractive \	  
+	  && apt-get install -y --no-install-recommends $supportServices; \
 	  savedAptMark="$(apt-mark showmanual)"; \
 	  apt-get install -y --no-install-recommends $buildDeps; \
 	 # build php extensions with development dependencies, and install them
@@ -27,8 +35,9 @@ RUN set -eux; \
 	   gd --with-freetype --with-jpeg; \
 	 docker-php-ext-install -j "$(nproc)" gd opcache pdo pdo_mysql pdo_pgsql mysqli zip; \
 	  # install xdebug extension
+	# pear config-set php_ini /usr/local/etc/php/php.ini; \
 	 # pecl install xdebug; \
-		# docker-php-ext-enable xdebug; \
+	 # docker-php-ext-enable xdebug; \
 	# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
 	 apt-mark auto '.*' > /dev/null; \
 	 apt-mark manual $savedAptMark; \
@@ -42,59 +51,58 @@ RUN set -eux; \
 	 \
 	 apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 	  rm -rf /var/lib/apt/lists/*
-	# load some general php configuration files
-	COPY php-*.ini /usr/local/etc/php/conf.d/
-	# copy msmtp config files
-	COPY ./msmtprc /etc/msmtprc
-	
-	# download and load nodejs debian packages to be activated on the next
-	# `apt-get install nodejs` command
-	# install all the devtools needed for php cli command line tools (e.g. drush, wp-cli)
-	RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - ; \
-	apt-get update ; apt-get install -y --no-install-recommends \
-				git \
-				less \
-				default-mysql-client \
-				openssh-client \
-				ca-certificates \
-				nodejs \
-				rsync \
-				tar \
-				unzip \
-				sudo \
-				zip ; \
-				rm -rf /var/lib/apt/lists/*
+	  
+# copy msmtp config files
+COPY ./msmtprc /etc/msmtprc
 
-	# install composer
-	RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-setup.php.sig \
-	&& curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
-	&& php composer-setup.php -- --install-dir=/usr/local/bin --filename=composer \
-	&& rm composer-setup*
+# download and load nodejs debian packages to be activated on the next
+# `apt-get install nodejs` command
+# install all the devtools needed for php cli command line tools (e.g. drush, wp-cli)
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - ; \
+apt-get update ; apt-get install -y --no-install-recommends \
+			git \
+			less \
+			default-mysql-client \
+			openssh-client \
+			ca-certificates \
+			nodejs \
+			rsync \
+			tar \
+			unzip \
+			sudo \
+			zip ; \
+			rm -rf /var/lib/apt/lists/*
 
-	# install drupal launcher
-	RUN curl https://drupalconsole.com/installer -L -o drupal.phar \
-	&& mv drupal.phar /usr/local/bin/drupal \
-	&& chmod +x /usr/local/bin/drupal
+# install composer
+RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-setup.php.sig \
+&& curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
+&& php composer-setup.php -- --install-dir=/usr/local/bin --filename=composer \
+&& rm composer-setup*
 
-	# create user dev
-	RUN groupadd -r dev -g 1000 && useradd --uid 1000 --no-log-init -m -d /home/dev -s /bin/bash -r \
-	    -g dev -G sudo,www-data,staff dev && echo "dev:w3bd3v" | chpasswd
+# install drupal launcher
+RUN curl https://drupalconsole.com/installer -L -o drupal.phar \
+&& mv drupal.phar /usr/local/bin/drupal \
+&& chmod +x /usr/local/bin/drupal
 
-	COPY .bashrc /home/dev
-	RUN chown -R dev.dev /home/dev
+# create user dev
+RUN groupadd -r dev -g 1000 && useradd --uid 1000 --no-log-init -m -d /home/dev -s /bin/bash -r \
+	-g dev -G sudo,www-data,staff dev && echo "dev:w3bd3v" | chpasswd
 
-	# create working directory and give permissions to the 'www-data' user group
-	RUN mkdir -p /var/www/html && chown -R dev:www-data /var/www && chmod -R +664 /var/www
+COPY .bashrc /home/dev
+RUN chown -R dev.dev /home/dev
 
-	USER dev
-	ENV HOME /home/dev
+# create working directory and give permissions to the 'www-data' user group
+RUN mkdir -p /var/www/html && chown -R dev:www-data /var/www && chmod -R +664 /var/www
 
-	# Setting up composer
-	RUN composer global init
-	COPY composer.jtxt /home/dev/.composer/composer.json
-	RUN composer global install
+USER dev
+ENV HOME /home/dev
 
-	WORKDIR /var/www/html
+# Setting up composer
+RUN composer global init
+COPY composer.jtxt /home/dev/.composer/composer.json
+RUN composer global install
+
+WORKDIR /var/www/html
 # RUN composer global require drush/drush drupal/console && /home/dev/.composer/vendor/bin/drush init -y
 
 CMD /bin/bash
