@@ -98,6 +98,7 @@ USER dev
 ENV HOME /home/dev
 
 # Setting up composer
+RUN mkdir /home/dev/.composer && chown -R dev /home/dev/.composer
 COPY composer.jtxt /home/dev/.composer/composer.json
 RUN composer global install
 
