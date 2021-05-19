@@ -74,10 +74,8 @@ apt-get update ; apt-get install -y --no-install-recommends \
 			rm -rf /var/lib/apt/lists/*
 
 # install composer
-RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-setup.php.sig \
-&& curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
-&& php composer-setup.php -- --install-dir=/usr/local/bin --filename=composer \
-&& rm composer-setup*
+COPY composer-setup.sh /tmp/
+RUN chmod +x /tmp/composer-setup.sh && /tmp/composer-setup.sh
 
 # install drupal launcher
 RUN curl https://drupalconsole.com/installer -L -o drupal.phar \
@@ -100,7 +98,7 @@ ENV HOME /home/dev
 # Setting up composer
 RUN mkdir /home/dev/.composer && chown -R dev /home/dev/.composer
 COPY composer.jtxt /home/dev/.composer/composer.json
-RUN composer global install
+#RUN composer global install
 
 WORKDIR /var/www/html
 # RUN composer global require drush/drush drupal/console && /home/dev/.composer/vendor/bin/drush init -y
