@@ -95,6 +95,12 @@ RUN mkdir -p /var/www/html && chown -R dev:www-data /var/www && chmod -R +664 /v
 USER dev
 ENV HOME /home/dev
 
+# setting up ssh private key
+RUN mkdir -p /home/dev/.ssh
+# RUN cp /run/secrets/user_ssh_key /home/dev/.ssh/id_rsa
+# RUN cp /run/secrets/dev_ssh_key /home/dev/.ssh/dev_rsa
+RUN chown -R dev:dev /home/dev/.ssh
+
 # Setting up composer
 RUN mkdir /home/dev/.composer && chown -R dev /home/dev/.composer
 COPY composer.jtxt /home/dev/.composer/composer.json
