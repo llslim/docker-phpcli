@@ -58,7 +58,7 @@ COPY ./msmtprc /etc/msmtprc
 # download and load nodejs debian packages to be activated on the next
 # `apt-get install nodejs` command
 # install all the devtools needed for php cli command line tools (e.g. drush, wp-cli)
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - ; \
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - ; \
 apt-get update ; apt-get install -y --no-install-recommends \
 			git \
 			less \
