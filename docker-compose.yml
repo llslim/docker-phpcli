@@ -1,6 +1,15 @@
-version: '3'
+version: '3.9'
 
 services:
    cli:
      build: .
      image: llslim/phpcli:local-7.4
+    #  secrets:
+      #- user_ssh_key
+      # - dev_ssh_key
+
+# secrets:
+  # user_ssh_key:
+    # file: ~/.ssh/id_rsa
+  # dev_ssh_key:
+  #   file: ~/.ssh/kevdev_rsa
