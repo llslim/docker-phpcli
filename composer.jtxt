@@ -10,7 +10,7 @@
     ],
     "require": {
    	"drush/drush":"*",
-        "wp-cli/wp-cli":"*",
+    "wp-cli/wp-cli":"*",
 	"wp-cli/core-command":"*",
 	"wp-cli/config-command":"*",
 	"wp-cli/db-command":"*",
