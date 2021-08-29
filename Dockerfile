@@ -104,7 +104,7 @@ RUN chown -R dev:dev /home/dev/.ssh
 # Setting up composer
 RUN mkdir /home/dev/.composer && chown -R dev /home/dev/.composer
 COPY composer.jtxt /home/dev/.composer/composer.json
-#RUN composer global install
+RUN composer global install
 
 WORKDIR /var/www/html
 # RUN composer global require drush/drush drupal/console && /home/dev/.composer/vendor/bin/drush init -y
