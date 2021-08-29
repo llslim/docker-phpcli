@@ -3,7 +3,7 @@ version: '3.9'
 services:
    cli:
      build: .
-     image: llslim/docker-phpcl:7.4
+     image: llslim/docker-phpcli:7.4
     #  secrets:
       #- user_ssh_key
       # - dev_ssh_key
