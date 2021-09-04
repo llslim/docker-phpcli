@@ -1,0 +1,29 @@
+{
+    "name": "llslim/composer",
+    "description": "global php tools for Kevin Williams on WSL",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kevin Williams",
+            "email": "llslim@gmail.com"
+        }
+    ],
+    "require": {
+   	"drush/drush":"*",
+    "wp-cli/wp-cli":"*",
+	"wp-cli/core-command":"*",
+	"wp-cli/config-command":"*",
+	"wp-cli/db-command":"*",
+	"wp-cli/scaffold-command":"*",
+	"wp-cli/extension-command":"*",
+	"wp-cli/widget-command":"*",
+	"wp-cli/media-command":"*",
+	"wp-cli/search-replace-command":"*",
+	"wp-cli/entity-command":"*",
+	"wp-cli/cache-command":"*",
+	"wp-cli/export-command":"*",
+	"phpunit/phpunit":"*",
+	"wp-cli/package-command":"*",
+        "composer/composer":"*"
+    }
+}
