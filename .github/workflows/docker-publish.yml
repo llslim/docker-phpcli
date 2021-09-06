@@ -1,0 +1,68 @@
+name: Docker
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+on:
+  schedule:
+    - cron: '24 10 * * *'
+  push:
+    branches: [ master ]
+    # Publish semver tags as releases.
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: docker.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: 'llslim/docker-phpcli' 
+  # ${{ github.repository }}
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Login against a Docker registry except on PR
+      # https://github.com/docker/login-action
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+        with:
+          # registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+
+      # Build and push Docker image
+      # https://github.com/mr-smithers-excellent/docker-build-push
+      - name: Build and push Docker image (PHP 7.4)
+        uses: mr-smithers-excellent/docker-build-push@v5
+        with:
+          registry: ${{ env.REGISTRY }}
+          image: ${{ env.IMAGE_NAME }}
+          directory: ./7.4
+          dockerfile: ./7.4/Dockerfile
+          tags: 7.4
+
+      # Build and push Docker image
+      # https://github.com/mr-smithers-excellent/docker-build-push
+      - name: Build and push Docker image (PHP 8)
+        uses: mr-smithers-excellent/docker-build-push@v5
+        with:
+          registry: ${{ env.REGISTRY }}
+          image: ${{ env.IMAGE_NAME }}
+          dockerfile: ./8/Dockerfile
+          directory: ./8
+          tags: 8
